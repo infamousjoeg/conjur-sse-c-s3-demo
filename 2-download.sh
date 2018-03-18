@@ -4,7 +4,7 @@ set -eo pipefail
 api_key=$(docker-compose exec conjur sudo -u conjur conjur-plugin-service possum rails r "print Credentials['demo:user:admin'].api_key" | tail -1)
 
 echo '--------- Load Conjur Policy ------------'
-output=$(docker-compose run --rm -e CONJUR_AUTHN_API_KEY=$api_key --entrypoint /bin/bash conjur-cli -c "
+$output=$(docker exec conjur-cli /bin/bash -c "
   conjur hostfactory tokens create --duration-minutes 30 s3-workers_factory  | jq -r '.[0].token'
 ")
 
