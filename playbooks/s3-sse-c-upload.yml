@@ -1,0 +1,21 @@
+- hosts: all 
+  gather_facts: false
+
+  roles:
+    - role: cyberark.conjur-host-identity
+      conjur_appliance_url: 'https://conjur'
+      conjur_account: 'demo'
+      conjur_host_factory_token: '{{ lookup("env", "HFTOKEN") }}'
+      conjur_host_name: 's3-uploader'
+      conjur_ssl_certificate: '{{ lookup("file", "/src/certs/ca.crt") }}'
+      conjur_validate_certs: true
+    
+    - role: ssilab.aws-cli
+      aws_output_format: 'json'
+      aws_region: 'us-east-1'
+      aws_access_key_id: '{{ lookup("env", "AWS_ACCESS_KEY_ID") }}'
+      aws_secret_access_key: '{{ lookup("env", "AWS_SECRET_ACCESS_KEY") }}'
+
+  tasks:  
+    - name: Upload HIPAA Authorization Form to AWS S3 encrypted w/ AES256 Key (SSE-C)
+      shell: "summon --yaml 'AES_KEY: !var:file aws-sse-c/aws-s3/aes256_key' aws s3 cp /src/assets/hipaa-authorization.pdf s3://aws-sse-c-demo/ --sse-c-key $AES_KEY"

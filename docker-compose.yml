@@ -1,0 +1,35 @@
+version: '2'
+services:
+
+  conjur:
+    image: registry2.itci.conjur.net/conjur-appliance:5.0-stable
+    container_name: conjur
+    ports:
+      - "443:443"
+    security_opt:
+      - "seccomp:unconfined"
+
+  conjur-cli:
+    image: conjurinc/cli5
+    container_name: conjur-cli
+    environment:
+      CONJUR_APPLIANCE_URL: https://conjur
+      CONJUR_ACCOUNT: demo
+      CONJUR_AUTHN_LOGIN: admin
+    volumes:
+      - ./policies:/src/policies
+      - ./certs:/src/certs
+    links:
+      - conjur
+  
+  ansible:
+    build:
+      context: .
+      dockerfile: build/ansible/Dockerfile
+    container_name: ansible
+    volumes:
+      - ./playbooks:/src/playbooks
+      - ./certs:/src/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - conjur
