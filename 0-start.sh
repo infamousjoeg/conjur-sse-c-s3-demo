@@ -28,7 +28,9 @@ echo
 echo '--------- Load Policy & AES256 Key ------------'
 echo
 
-docker exec -it conjur-cli /bin/bash -c "
+api_key=$(docker exec conjur-master sudo -u conjur conjur-plugin-service possum rails r "print Credentials['demo:user:admin'].api_key" | tail -1)
+
+docker exec -it -e CONJUR_AUTHN_API_KEY $api_key conjur-cli /bin/bash -c "
   cp /src/certs/ca.crt /usr/local/share/ca-certificates/ca.crt
   update-ca-certificates
   conjur policy load --replace root /src/policies/aws-sse-c-policy.yml

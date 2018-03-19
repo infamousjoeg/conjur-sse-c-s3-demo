@@ -16,7 +16,6 @@ services:
       CONJUR_APPLIANCE_URL: https://conjur-master
       CONJUR_ACCOUNT: demo
       CONJUR_AUTHN_LOGIN: admin
-      CONJUR_AUTHN_API_KEY: Cyberark1
     volumes:
       - ./policies:/src/policies
       - ./certs:/src/certs
