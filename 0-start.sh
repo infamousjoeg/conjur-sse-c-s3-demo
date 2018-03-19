@@ -19,6 +19,22 @@ docker cp conjur-master:/opt/conjur/etc/ssl/ca.pem ./certs
 openssl x509 -in ./certs/ca.pem -inform PEM -out ./certs/ca.crt
 
 echo
+echo '--------- Wait for Healthy Conjur Master -----------'
+echo
+
+set +e
+while : ; do
+  printf "..."
+  sleep 2
+  healthy=$(curl -sk https://$HOSTNAME/health | jq -r '.ok')
+  if [[ $healthy == true ]]; then
+    break
+  fi
+done
+printf "\n"
+set -e
+
+echo
 echo '--------- Bring Up Conjur CLI ------------'
 echo
 
