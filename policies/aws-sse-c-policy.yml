@@ -1,9 +1,8 @@
 ---
 - !policy
   id: aws-sse-c
-  owner: !group security_admin
   body:
-    - &variables
+    - &keys
       - !variable aws-s3/aes256_key
       - !variable aws-iam/access_key_id
       - !variable aws-iam/secret_access_key
@@ -17,4 +16,4 @@
     - !permit
       role: !layer s3-workers
       privileges: [ read, execute ]
-      resource: *variables
+      resource: *keys

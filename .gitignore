@@ -1,2 +1,2 @@
-./certs/ca.pem
-./certs/ca.crt
+certs/ca.pem
+certs/ca.crt
