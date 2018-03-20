@@ -41,18 +41,22 @@ echo
 docker-compose up -d conjur-cli
 
 echo
-echo '--------- Load Policy & AES256 Key ------------'
+echo '--------- Load Policy & Generate/Load AES256 Key ------------'
 echo
 
-api_key=$(docker-compose exec conjur sudo -u conjur conjur-plugin-service possum rails r "print Credentials['demo:user:admin'].api_key" | tail -1)
-
-docker exec -it -e CONJUR_AUTHN_API_KEY=$api_key conjur-cli /bin/bash -c "
+docker exec conjur-cli /bin/bash -c "
   cp /src/certs/ca.crt /usr/local/share/ca-certificates/ca.crt
   update-ca-certificates
   conjur policy load --replace root /src/policies/aws-sse-c-policy.yml
   conjur list
-  conjur variable values add aws-sse-c/aws-s3/aes256_key @/src/certs/aes256.key
+  conjur variable values add aws-sse-c/aws-s3/aes256_key $(openssl rand -hex 16)
 "
+
+echo
+echo '--------- Build S3-Workers Docker Image ------------'
+echo
+
+docker-compose build ansible
 
 echo
 echo "Demo environment ready!"
