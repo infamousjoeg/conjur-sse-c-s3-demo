@@ -15,3 +15,5 @@ RUN apk update && apk upgrade && apk --update add --no-cache \
 RUN echo 'root:Cyberark1' | chpasswd
 
 RUN gem install conjur-cli -v 5.6.5
+
+ENTRYPOINT [ "/bin/sh", "-c", "sleep 100000000" ]
