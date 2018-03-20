@@ -14,6 +14,8 @@ echo
 docker exec conjur-master \
   evoke configure master -h conjur-master -p Cyberark1 demo
 
+mkdir ./certs
+
 docker cp conjur-master:/opt/conjur/etc/ssl/ca.pem ./certs
 
 openssl x509 -in ./certs/ca.pem -inform PEM -out ./certs/ca.crt
@@ -47,7 +49,7 @@ echo
 docker exec conjur-cli /bin/bash -c "
   cp /src/certs/ca.crt /usr/local/share/ca-certificates/ca.crt
   update-ca-certificates
-  conjur policy load --replace root /src/policies/aws-sse-c-policy.yml
+  conjur policy load --as-group security_admin /src/policies/aws-sse-c-policy.yml
   conjur list
   conjur variable values add aws-sse-c/aws-s3/aes256_key $(openssl rand -hex 16)
 "
