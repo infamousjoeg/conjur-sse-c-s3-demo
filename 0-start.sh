@@ -14,12 +14,6 @@ echo
 docker exec conjur-master \
   evoke configure master -h conjur-master -p Cyberark1 demo
 
-mkdir certs
-
-docker cp conjur-master:/opt/conjur/etc/ssl/ca.pem ./certs
-
-openssl x509 -in ./certs/ca.pem -inform PEM -out ./certs/ca.crt
-
 echo
 echo '--------- Wait for Healthy Conjur Master -----------'
 echo
