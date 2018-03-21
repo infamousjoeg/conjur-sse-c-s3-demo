@@ -5,20 +5,35 @@ echo
 echo '--------- Create Host Factory Token ------------'
 echo
 
-api_key=$(docker-compose exec conjur sudo -u conjur conjur-plugin-service possum rails r "print Credentials['demo:user:admin'].api_key" | tail -1)
+output=$(docker exec conjur-master conjur hostfactory tokens create --duration-minutes 1 aws-sse-c/s3-workers_factory  | jq -r '.[0].token')
 
-$output=$(docker exec -e CONJUR_AUTHN_API_KEY=$api_key conjur-cli /bin/bash -c "
-  conjur hostfactory tokens create --duration-minutes 30 aws-sse-c/s3-workers_factory  | jq -r '.[0].token'
-")
+echo "Time-to-live (TTL) set to 1 minute"
+echo $output
 
 hf_token=$(echo "$output" | tail -1 | tr -d '\r')
 
+echo
 echo '--------- Run Ansible on S3-Downloader ------------'
+echo
 
-summon docker-compose run --rm --name s3-downloader --env-file @SUMMONENVFILE ansible bash -c "
-  ansible-galaxy install cyberark.conjur-host-identity
-  ansible-galaxy install ssilab.aws-cli
-  HFTOKEN=$hf_token ansible-playbook -i \"localhost,\" -c local /src/playbooks/s3-sse-c-download.yml
-"
+AWS_ACCESS_KEY_ID=$(docker exec conjur-master conjur variable value aws-sse-c/aws-iam/access_key_id)
+AWS_SECRET_ACCESS_KEY=$(docker exec conjur-master conjur variable value aws-sse-c/aws-iam/secret_access_key)
+AWS_DEFAULT_REGION='us-east-1'
+
+docker-compose run --rm --name s3-downloader \
+  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+  -e CONJUR_MAJOR_VERSION=4 \
+  s3-worker bash -c "
+    echo '192.168.3.10 conjur-master' >> /etc/hosts
+    ansible-galaxy install cyberark.conjur-host-identity
+    ansible-galaxy install ssilab.aws-cli
+    HFTOKEN=$hf_token ansible-playbook -i \"localhost,\" -c local /src/playbooks/s3-sse-c-download.yml
+  "
+
+echo
+echo "Downloaded all assets to ./assets/downloads/"
+echo
 
 # summon --yaml 'SSH_KEY: !var:file ansible/staging/foo/ssh_private_key' bash -c 'ansible-playbook --private-key $SSH_KEY playbook/applications/foo.yml'

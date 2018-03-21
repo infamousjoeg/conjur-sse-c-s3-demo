@@ -24,10 +24,16 @@ docker-compose run --rm --name s3-uploader \
   -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
-  ansible bash -c "
+  -e CONJUR_MAJOR_VERSION=4 \
+  s3-worker bash -c "
+    echo '192.168.3.10 conjur-master' >> /etc/hosts
     ansible-galaxy install cyberark.conjur-host-identity
     ansible-galaxy install ssilab.aws-cli
     HFTOKEN=$hf_token ansible-playbook -i \"localhost,\" -c local /src/playbooks/s3-sse-c-upload.yml
   "
+
+echo
+echo "Uploaded all assets to s3://conjur-sse-c-s3-demo/"
+echo
 
 # summon --yaml 'SSH_KEY: !var:file ansible/staging/foo/ssh_private_key' bash -c 'ansible-playbook --private-key $SSH_KEY playbook/applications/foo.yml'

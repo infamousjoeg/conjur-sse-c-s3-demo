@@ -1,2 +1,4 @@
-certs/ca.pem
-certs/ca.crt
+certs/*
+playbooks/*.retry
+assets/downloads/*.pdf
+aws.cred

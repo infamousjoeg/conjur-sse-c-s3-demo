@@ -10,32 +10,14 @@ services:
       - ./policies:/src/policies
     security_opt:
       - "seccomp:unconfined"
-
-  conjur-cli:
-    build:
-      context: .
-      dockerfile: build/conjur-cli/Dockerfile
-    container_name: conjur-cli
-    environment:
-      CONJUR_APPLIANCE_URL: https://conjur-master
-      CONJUR_ACCOUNT: demo
-      CONJUR_AUTHN_LOGIN: admin
-      CONJUR_AUTHN_API_KEY: Cyberark1
-    volumes:
-      - ./policies:/src/policies
-      - ./certs:/src/certs
-    links:
-      - conjur
   
-  ansible:
+  s3-worker:
     build:
       context: .
       dockerfile: build/ansible/Dockerfile
-    container_name: ansible
+    container_name: s3-worker
     volumes:
       - ./playbooks:/src/playbooks
       - ./certs:/src/certs
       - ./assets:/src/assets
       - /var/run/docker.sock:/var/run/docker.sock
-    links:
-      - conjur

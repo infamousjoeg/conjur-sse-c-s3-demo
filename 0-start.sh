@@ -1,5 +1,6 @@
 #!/bin/bash
 set -eo pipefail
+source aws.cred
 
 echo
 echo '--------- Bring Up Conjur ------------'
@@ -36,26 +37,24 @@ done
 printf "\n"
 set -e
 
-# echo
-# echo '--------- Bring Up Conjur CLI ------------'
-# echo
-
-# docker-compose up -d conjur-cli
-
 echo
 echo '--------- Load Policy & Generate/Load AES256 Key ------------'
 echo
 
-docker exec conjur-master conjur authn login -u admin -p Cyberark1
-docker exec conjur-master conjur plugin install policy
-docker exec conjur-master conjur policy load --as-group security_admin /src/policies/aws-sse-c-policy.yml
-docker exec conjur-master conjur variable values add aws-sse-c/aws-s3/aes256_key $(openssl rand -hex 16)
+docker exec conjur-master /bin/bash -c "
+  conjur authn login -u admin -p Cyberark1
+  conjur plugin install policy
+  conjur policy load --as-group security_admin /src/policies/aws-sse-c-policy.yml
+  conjur variable values add aws-sse-c/aws-s3/aes256_key $(openssl rand -hex 16)
+  conjur variable values add aws-sse-c/aws-iam/access_key_id $AWS_ACCESS_KEY_ID
+  conjur variable values add aws-sse-c/aws-iam/secret_access_key $AWS_SECRET_ACCESS_KEY
+"
 
 echo
 echo '--------- Build S3-Workers Docker Image ------------'
 echo
 
-docker-compose build ansible
+docker-compose build s3-worker
 
 echo
 echo "Demo environment ready!"
