@@ -26,4 +26,4 @@
       debug:
         var: aes256_key
     - name: Upload HIPAA Authorization Form to AWS S3 encrypted w/ AES256 Key (SSE-C)
-      shell: "summon --yaml 'AES_KEY: !var aws-sse-c/aws-s3/aes256_key' bash -c \"aws s3 cp /src/assets/hipaa-authorization.pdf s3://conjur-sse-c-s3-demo/hipaa-authorization-AES256.pdf --sse-c AES256 --sse-c-key $AES_KEY\""
+      shell: "summon --yaml 'AES_KEY: !var aws-sse-c/aws-s3/aes256_key' bash -c 'aws s3 cp /src/assets/hipaa-authorization.pdf s3://conjur-sse-c-s3-demo/hipaa-authorization-AES256.pdf --sse-c AES256 --sse-c-key $AES_KEY'"
