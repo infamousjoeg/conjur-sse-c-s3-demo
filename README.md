@@ -125,8 +125,8 @@ $ hf_token=$(echo "$output" | tail -1 | tr -d '\r')
 Now that the Host Factory token has been generated with a one (1) minute time-to-live (TTL), the S3-Uploader container can be run.  But first, we need to get the AWS Access Key ID and AWS Secret Access Key from within Conjur.
 
 ```shell
-AWS_ACCESS_KEY_ID=$(docker exec conjur-master conjur variable value aws-sse-c/aws-iam/access_key_id)
-AWS_SECRET_ACCESS_KEY=$(docker exec conjur-master conjur variable value aws-sse-c/aws-iam/secret_access_key)
+$ AWS_ACCESS_KEY_ID=$(docker exec conjur-master conjur variable value aws-sse-c/aws-iam/access_key_id)
+$ AWS_SECRET_ACCESS_KEY=$(docker exec conjur-master conjur variable value aws-sse-c/aws-iam/secret_access_key)
 ```
 
 Finally, we can start up the S3-Uploader container as ephemeral `--rm` and provide it the relevant variables for the [CyberArk.Conjur-Host-Identity Ansible Role](https://galaxy.ansible.com/cyberark/conjur-host-identity/) and the [SSILab.AWS-CLI Ansible Role](https://galaxy.ansible.com/ssilab/aws-cli/) to work properly.
@@ -134,7 +134,7 @@ Finally, we can start up the S3-Uploader container as ephemeral `--rm` and provi
 Within the container, we are going to set the Conjur Master's hostname into `/etc/hosts`, install the two (2) aforementioned Ansible Roles from [Ansible Galaxy](https://galaxy.ansible.com), and then start up our [s3-sse-c-upload.yml](playbooks/s3-sse-c-upload.yml) Ansible Playbook.
 
 ```shell
-docker-compose run --rm --name s3-uploader \
+$ docker-compose run --rm --name s3-uploader \
   -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
@@ -219,7 +219,7 @@ This script is a spitting mirror image of [1-upload.sh](1-upload.sh) in the sens
 The difference comes in the Ansible Playbook that is run in this script as detailed in the below Docker `run` command:
 
 ```shell
-docker-compose run --rm --name s3-downloader \
+$ docker-compose run --rm --name s3-downloader \
   -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
