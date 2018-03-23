@@ -1,6 +1,6 @@
 # Conjur SSE-C S3 Demo
 
-![GitHub (pre-)release](https://img.shields.io/github/release/qubyte/rubidium/all.svg)
+![GitHub (pre-)release](https://img.shields.io/github/release/infamousjoeg/conjur-sse-c-s3-demo/all.svg)
  [![GitHub issues](https://img.shields.io/github/issues/infamousjoeg/conjur-sse-c-s3-demo.svg)](https://github.com/infamousjoeg/conjur-sse-c-s3-demo/issues)
  [![GitHub license](https://img.shields.io/github/license/infamousjoeg/conjur-sse-c-s3-demo.svg)](https://github.com/infamousjoeg/conjur-sse-c-s3-demo/blob/master/LICENSE)
 
